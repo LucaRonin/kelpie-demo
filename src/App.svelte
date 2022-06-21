@@ -30,8 +30,29 @@
   );
   let currentPrediction = selectedPrediction
 
-  function loadSelectedPrediction() {
+  async function loadSelectedPrediction() {
+    var explainButton = document.getElementById("explain-button");
+    explainButton.disabled = true;
+    explainButton.classList.remove('bg-violet-300');
+    explainButton.classList.add('bg-zinc-300');
+
+    var loaderAnimation= document.getElementById("loader-animation");
+    loaderAnimation.style.display = "inline-block";
+    
+    await sleep(1000);
+
     currentPrediction = selectedPrediction;
+    explainButton.disabled = false;
+    explainButton.classList.remove('bg-zinc-300');
+    explainButton.classList.add('bg-violet-300');
+
+    loaderAnimation.style.display = "none";
+  }
+
+  function sleep(ms) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
   }
 
   $: {
@@ -137,8 +158,12 @@
 
           <!-- BUTTON -->
           <div style="align-self: end;">
-            <button class="bg-violet-300 hover:bg-violet-400 text-gray-800 font-bold py-2 px-4 inline-flex items-center md:rounded-lg shadow ring-1 ring-black ring-opacity-5" 
-                    style="border:0px"
+
+            <div id="loader-animation" class="lds-dual-ring"></div>
+
+            <button id="explain-button"
+                    class="bg-violet-300 hover:bg-violet-400 text-gray-800 font-bold py-2 px-4 inline-flex items-center md:rounded-lg shadow ring-1 ring-black ring-opacity-5" 
+                    style="border:0px; padding-top:10px;"
                     on:click="{loadSelectedPrediction}">
               <svg class="fill-current w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 779 801">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M451.5 37C463.5 21.3 478.4 2.09998 478.4 2.09998C478.4 2.09998 483.5 -6.5 487 14.5L489.4 28.5L543.3 93.3C553.036 105.009 561.626 115.063 568.944 123.63C583.877 141.107 593.517 152.39 596.8 158.9C601.693 168.601 602.621 170.82 603.7 180.9C604.588 189.193 601.047 196.072 596.8 201.507C593.185 206.132 587.176 208.636 580.883 209.932C574.303 211.287 561.342 210.364 556.4 208.5C548.135 205.382 545.285 203.056 539.023 197.946C536.639 196 533.76 193.65 529.9 190.7C515.9 180.1 502.8 170.8 500.8 170.1C493.3 167.6 484.2 172.9 482 180.9C481 184.6 481.6 188.6 483.9 192.8C484.5 193.9 504.2 209.5 527.7 227.5C551.3 245.5 572 261.7 573.8 263.4C580 269.1 589.3 282.4 593.7 291.7C600.5 306 603.2 317.6 603.7 335.7L604.2 350.9L608.9 351.8C611.4 352.4 633.8 356.3 658.5 360.6C683.3 364.8 703.8 368.6 704.1 368.9C704.5 369.2 709.4 404.4 715 447C722.5 504.1 725 525.8 724.5 529.5C723.1 540.4 716.5 549.4 706.5 554.2C699.1 557.7 696.2 557.8 695.6 554.7C694.8 551.2 692 528.6 692 526.3C692 524.4 692.8 524.1 698.5 523.5C702.9 523 705 522.3 705 521.4C705 520.4 673.2 433.8 672.6 433.4C672.6 433.336 661.121 434.841 643.946 437.092C634.394 438.344 623.08 439.827 611 441.4L556.4 433.4L478.4 554.7L338.838 395.911C338.838 395.911 370.276 353.069 381.225 338.106C399.122 313.646 398.944 303.998 398.871 300.048C398.867 299.82 398.863 299.61 398.863 299.418C398.863 295.905 390 283.7 390 283.7L375.5 292.5C367.5 297.4 360.7 301.1 360.5 300.8C360.2 300.5 357.4 281.2 354.4 257.9C351.3 234.6 348.6 215.3 348.4 215.1C348.2 214.9 341 215.7 332.3 216.8C323.6 217.9 316.4 218.8 316.3 218.6C316.1 218.5 323 201.2 331.4 180.2L346.9 142L332.9 131.3L319.7 119.9C319.7 119.9 337.1 112.1 357.5 103.5C359.364 102.71 361.198 101.933 362.993 101.173C380.744 93.6544 394.609 87.7816 394.7 87.6C394.8 87.5 393.9 79.5 392.6 69.9C391.3 60.3 390.3 52.4 390.4 52.3C390.4 52.3 399.2 55.3 409.9 59.1C420.5 62.9 429.4 65.9 429.5 65.8C429.565 65.6691 433.829 60.0981 440.131 51.8624C443.458 47.5147 447.354 42.4245 451.5 37ZM502.1 114.1C507.9 108.3 506.5 99.3 499.1 95.2C494.5 92.6 492.6 92.5 488.1 94.7C483.2 97.1 480.8 101.5 481.3 106.8C482.4 117.3 494.6 121.6 502.1 114.1Z" fill="black"/>
