@@ -33,9 +33,8 @@
   async function loadSelectedPrediction() {
     var explainButton = document.getElementById("explain-button");
     explainButton.disabled = true;
-    explainButton.classList.remove('bg-violet-300');
     explainButton.classList.add('bg-zinc-300');
-
+    explainButton.classList.remove('hover:bg-violet-400')
     var loaderAnimation= document.getElementById("loader-animation");
     loaderAnimation.style.display = "inline-block";
     
@@ -44,7 +43,7 @@
     currentPrediction = selectedPrediction;
     explainButton.disabled = false;
     explainButton.classList.remove('bg-zinc-300');
-    explainButton.classList.add('bg-violet-300');
+    explainButton.classList.add('hover:bg-violet-400')
 
     loaderAnimation.style.display = "none";
   }
