@@ -25,9 +25,14 @@
   let scenario = "necessary";
 
   let predictions = data;
-  let currentPrediction = JSON.parse(
+  let selectedPrediction = JSON.parse(
     '{"prediction": {"head": {                        "entity": "Holly Marie Combs",                        "description": "American actress"                    },                    "relation": "has been friends with",                    "tail": {                        "entity": "Ben Affleck",                        "description": "American actor"                    }                },                "explanation": {                    "facts": [                        {                            "head": {                                "entity": "Ben Affleck",                                "description": "American actor"                            },                            "relation": "has been friends with",                            "tail": {                                "entity": "Holly Marie Combs",                                "description": "American actress"                            }                        }                    ],                    "old_rank": 1,                    "new_rank": 689,                    "old_score": 10.693,                    "new_score": 2.616,                    "note": "classica relazione inversa di FB15k"                }            }'
   );
+  let currentPrediction = selectedPrediction
+
+  function loadSelectedPrediction() {
+    currentPrediction = selectedPrediction;
+  }
 
   $: {
     predictions =
@@ -114,7 +119,7 @@
                       {#each (predictions.explained_predictions || []) as p}
                       <tr>
                         <td class="relative w-12 px-6 sm:w-16 sm:px-8">
-                          <input bind:group={currentPrediction} value={p} name="link-explanation" type="radio" class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-violet-600 focus:ring-violet-500 sm:left-6" />
+                          <input bind:group={selectedPrediction} value={p} name="link-explanation" type="radio" class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-violet-600 focus:ring-violet-500 sm:left-6" />
                         </td>
                         <!-- Selected: "text-violet-600", Not Selected: "text-gray-900" -->
                         <td class="max-w-xs truncate whitespace-nowrap py-4 pr-3 text-sm font-medium text-gray-900">{R.path(['prediction', 'head', 'entity'], p)}</td>
@@ -132,7 +137,9 @@
 
           <!-- BUTTON -->
           <div style="align-self: end;">
-            <button class="bg-violet-300 hover:bg-violet-400 text-gray-800 font-bold py-2 px-4 inline-flex items-center md:rounded-lg shadow ring-1 ring-black ring-opacity-5" style="border:0px">
+            <button class="bg-violet-300 hover:bg-violet-400 text-gray-800 font-bold py-2 px-4 inline-flex items-center md:rounded-lg shadow ring-1 ring-black ring-opacity-5" 
+                    style="border:0px"
+                    on:click="{loadSelectedPrediction}">
               <svg class="fill-current w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 779 801">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M451.5 37C463.5 21.3 478.4 2.09998 478.4 2.09998C478.4 2.09998 483.5 -6.5 487 14.5L489.4 28.5L543.3 93.3C553.036 105.009 561.626 115.063 568.944 123.63C583.877 141.107 593.517 152.39 596.8 158.9C601.693 168.601 602.621 170.82 603.7 180.9C604.588 189.193 601.047 196.072 596.8 201.507C593.185 206.132 587.176 208.636 580.883 209.932C574.303 211.287 561.342 210.364 556.4 208.5C548.135 205.382 545.285 203.056 539.023 197.946C536.639 196 533.76 193.65 529.9 190.7C515.9 180.1 502.8 170.8 500.8 170.1C493.3 167.6 484.2 172.9 482 180.9C481 184.6 481.6 188.6 483.9 192.8C484.5 193.9 504.2 209.5 527.7 227.5C551.3 245.5 572 261.7 573.8 263.4C580 269.1 589.3 282.4 593.7 291.7C600.5 306 603.2 317.6 603.7 335.7L604.2 350.9L608.9 351.8C611.4 352.4 633.8 356.3 658.5 360.6C683.3 364.8 703.8 368.6 704.1 368.9C704.5 369.2 709.4 404.4 715 447C722.5 504.1 725 525.8 724.5 529.5C723.1 540.4 716.5 549.4 706.5 554.2C699.1 557.7 696.2 557.8 695.6 554.7C694.8 551.2 692 528.6 692 526.3C692 524.4 692.8 524.1 698.5 523.5C702.9 523 705 522.3 705 521.4C705 520.4 673.2 433.8 672.6 433.4C672.6 433.336 661.121 434.841 643.946 437.092C634.394 438.344 623.08 439.827 611 441.4L556.4 433.4L478.4 554.7L338.838 395.911C338.838 395.911 370.276 353.069 381.225 338.106C399.122 313.646 398.944 303.998 398.871 300.048C398.867 299.82 398.863 299.61 398.863 299.418C398.863 295.905 390 283.7 390 283.7L375.5 292.5C367.5 297.4 360.7 301.1 360.5 300.8C360.2 300.5 357.4 281.2 354.4 257.9C351.3 234.6 348.6 215.3 348.4 215.1C348.2 214.9 341 215.7 332.3 216.8C323.6 217.9 316.4 218.8 316.3 218.6C316.1 218.5 323 201.2 331.4 180.2L346.9 142L332.9 131.3L319.7 119.9C319.7 119.9 337.1 112.1 357.5 103.5C359.364 102.71 361.198 101.933 362.993 101.173C380.744 93.6544 394.609 87.7816 394.7 87.6C394.8 87.5 393.9 79.5 392.6 69.9C391.3 60.3 390.3 52.4 390.4 52.3C390.4 52.3 399.2 55.3 409.9 59.1C420.5 62.9 429.4 65.9 429.5 65.8C429.565 65.6691 433.829 60.0981 440.131 51.8624C443.458 47.5147 447.354 42.4245 451.5 37ZM502.1 114.1C507.9 108.3 506.5 99.3 499.1 95.2C494.5 92.6 492.6 92.5 488.1 94.7C483.2 97.1 480.8 101.5 481.3 106.8C482.4 117.3 494.6 121.6 502.1 114.1Z" fill="black"/>
                 <path d="M613.2 215.5C594.4 235.5 577.374 251.89 577.374 252.39C577.374 252.619 586.189 259.924 594.007 270.3C595.448 272.213 603.03 281.791 607.489 294.246C611.948 306.701 613.035 315.271 613.035 315.271L655.993 275.585C655.993 275.585 670.524 248.2 671.724 248.5C672.724 248.8 693.3 257.2 713.4 267.5L750.1 286.1L746.8 290.3C745.1 292.6 743.3 295 742.9 295.6C742.1 296.6 769.6 318 771.8 318C772.4 318 774.1 315.4 775.7 312.2C778.2 307.1 778.5 305.4 778.5 296.5C778.5 287.7 778.2 285.9 775.8 281C774.3 278 771.2 273.6 768.8 271.3C763.5 266.2 649.9 179 648.5 179C647.9 179 632 195.4 613.2 215.5Z" fill="black"/>
