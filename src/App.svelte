@@ -263,7 +263,9 @@
         </div>
       </div>
     </div>
+    
     <!-- KELPIE EXPLANATION -->
+
     <div class="mx-auto max-w-5xl px-4 pb-40 sm:px-6 lg:px-8">
       <h1 class="text-3xl font-bold leading-tight text-gray-900">
         Kelpie Explanation
@@ -277,7 +279,7 @@
           <div
             class="flex flex-col justify-center h-32 grow rounded-lg border-2 border-violet-400 bg-white px-4 py-5 sm:px-6"
           >
-            <h3 class="text-lg font-medium leading-6 text-gray-900">
+            <h3 class="text-m font-medium leading-6 text-gray-900">
               {currentPrediction.prediction.head.entity}
             </h3>
             <p class="mt-1 text-sm text-gray-400">
@@ -304,7 +306,7 @@
         <div
           class="w-full flex h-32 flex-row grow items-center rounded-lg border-2 border-violet-400 bg-white px-4 sm:px-6"
         >
-          <div class="w-full text-lg">
+          <div class="w-full text-m">
             {currentPrediction.prediction.relation}
           </div>
         </div>
@@ -327,7 +329,7 @@
         <div
           class="flex flex-col justify-center grow w-full h-32 rounded-lg border-2 border-violet-400 bg-white px-4 py-5 sm:px-6"
         >
-          <h3 class="text-lg font-medium leading-6 text-gray-900">
+          <h3 class="text-m font-medium leading-6 text-gray-900">
             {currentPrediction.prediction.tail.entity}
           </h3>
           <p class="mt-1 text-sm text-gray-400">
@@ -393,21 +395,74 @@
             </div>
           </div>
         </div>
+      </div>
+
+      {#if scenario=="necessary"}
+
+        <h1 class="mt-8 text-xl leading-tight text-gray-600">
+          Statistics
+        </h1>
+
         <div class="mt-4 flex flex-row grow-0 gap-8">
           <div class="flex flex-col gap-2">
-            <p>Original Tail Rank:</p>
-            <p>Tail Rank after removal:</p>
-            <p>Original Score:</p>
-            <p>Score after removal:</p>
-          </div>
-          <div class="flex flex-col gap-2">
-            <p class="font-bold">{currentPrediction.explanation.old_rank}</p>
-            <p class="font-bold">{currentPrediction.explanation.new_rank}</p>
-            <p class="font-bold">{currentPrediction.explanation.old_score}</p>
-            <p class="font-bold">{currentPrediction.explanation.new_score}</p>
+            <p class="text-m" style="margin-left: 2rem;">Original Tail Rank: 
+              <span class="font-bold">{currentPrediction.explanation.old_rank}</span>
+            </p>
+            <p class="text-m" style="margin-left: 2rem;">Tail Rank after removal: 
+              <span class="font-bold text-purple-600">{currentPrediction.explanation.new_rank}</span>
+            </p>
+            <p class="text-m" style="margin-left: 2rem;">Original Score: 
+              <span class="font-bold">{currentPrediction.explanation.old_score}</span>
+            </p>
+            {#if currentPrediction.explanation.old_score > currentPrediction.explanation.new_score}
+            <p class="text-m" style="margin-left: 2rem;">Score after removal: 
+              <span class="font-bold">{currentPrediction.explanation.new_score}</span> 
+                <span class="font-bold text-red-600">({currentPrediction.explanation.new_score-currentPrediction.explanation.old_score})</span>
+              </p>
+            {:else}
+              <p class="text-m" style="margin-left: 2rem;">Score after removal: 
+                <span class="font-bold">{currentPrediction.explanation.new_score}</span>
+                <span class="font-bold text-red-600"> +({currentPrediction.explanation.new_score-currentPrediction.explanation.old_score})</span>
+              </p>
+            {/if}
           </div>
         </div>
-      </div>
+      {/if}
+
+      {#if scenario=="sufficient"}
+        <h1 class="mt-8 text-xl leading-tight text-gray-600">
+          Converted Entities
+        </h1>
+
+        <div class="mt-8 grid grid-cols-1 gap-8">
+    
+          {#each currentPrediction.explanation.converted || [] as converted_entity}
+            <div class="max-w-m grid grid-cols-2">
+              <div class="max-w-sm">
+                <div class="flex flex-col justify-center h-max-20 grow rounded-lg border-2 border-gray-400 bg-white px-4 py-5 sm:px-6">
+                  <h3 class="text-sm font-medium leading-6 text-gray-900">
+                    {converted_entity.entity.entity}
+                  </h3>
+                  <p class="mt-1 text-sm text-gray-400">
+                    {converted_entity.entity.description}
+                  </p>
+                </div>
+              </div>
+  
+              <div class="mt-4 flex flex-row grow-0 gap-8" style="margin: 0; align-items: center;">
+                <div class="flex flex-col gap-2">
+                  <p class="text-m">Original Tail Rank: 
+                    <span class="font-bold">{converted_entity.original_rank}</span>
+                  </p>
+                  <p class="text-m">Conversion Tail Rank:
+                    <span class="font-bold text-purple-600">{converted_entity.new_rank}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          {/each}
+        </div>
+      {/if}
     </div>
   </div>
 </div>
