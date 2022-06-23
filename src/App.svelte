@@ -154,7 +154,7 @@
             </div>
           </div>
           <!-- TABLE -->
-          <div class="flex grow flex-col">
+          <div class="flex flex-col max-h-96">
             <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
               <div
                 class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8"
@@ -190,7 +190,6 @@
                     </thead>
                     <tbody
                       class="divide-y divide-gray-200 bg-white overflow-y-auto"
-                      style="height: 50vh;"
                     >
                       <!-- Selected: "bg-gray-50" -->
                       {#each predictions.explained_predictions || [] as p}
