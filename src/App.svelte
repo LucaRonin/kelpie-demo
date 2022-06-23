@@ -417,12 +417,12 @@
             {#if currentPrediction.explanation.old_score > currentPrediction.explanation.new_score}
             <p class="text-m" style="margin-left: 2rem;">Score after removal: 
               <span class="font-bold">{currentPrediction.explanation.new_score}</span> 
-                <span class="font-bold text-red-600">({currentPrediction.explanation.new_score-currentPrediction.explanation.old_score})</span>
+                <span class="font-bold text-red-600">({(currentPrediction.explanation.new_score-currentPrediction.explanation.old_score).toFixed(3)})</span>
               </p>
             {:else}
               <p class="text-m" style="margin-left: 2rem;">Score after removal: 
                 <span class="font-bold">{currentPrediction.explanation.new_score}</span>
-                <span class="font-bold text-red-600"> +({currentPrediction.explanation.new_score-currentPrediction.explanation.old_score})</span>
+                <span class="font-bold text-red-600"> +({(currentPrediction.explanation.new_score-currentPrediction.explanation.old_score).toFixed(3)})</span>
               </p>
             {/if}
           </div>
