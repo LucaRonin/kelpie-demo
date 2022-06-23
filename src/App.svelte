@@ -20,7 +20,7 @@
     getComplexSufficient(),
   )
 
-  let model = 'ConvE'
+  let model = 'ComplEx'
   let dataset = 'FB15k'
   let scenario = 'necessary'
 
@@ -28,7 +28,7 @@
   let selectedPrediction = JSON.parse(
     '{"prediction": {"head": {                        "entity": "Holly Marie Combs",                        "description": "American actress"                    },                    "relation": "has been friends with",                    "tail": {                        "entity": "Ben Affleck",                        "description": "American actor"                    }                },                "explanation": {                    "facts": [                        {                            "head": {                                "entity": "Ben Affleck",                                "description": "American actor"                            },                            "relation": "has been friends with",                            "tail": {                                "entity": "Holly Marie Combs",                                "description": "American actress"                            }                        }                    ],                    "old_rank": 1,                    "new_rank": 689,                    "old_score": 10.693,                    "new_score": 2.616,                    "note": "classica relazione inversa di FB15k"                }            }',
   )
-  let currentPrediction = selectedPrediction
+  let currentPrediction = -1
 
   async function loadSelectedPrediction() {
     var explainButton = document.getElementById('explain-button')
@@ -64,10 +64,6 @@
         ]),
         data,
       ) || {}
-  }
-
-  $: {
-    console.log(currentPrediction)
   }
 </script>
 
@@ -114,8 +110,8 @@
                 name="model"
                 class="shadow mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-violet-500 focus:outline-none focus:ring-violet-500 sm:text-sm"
               >
-                <option>ComplEx</option>
-                <option selected>ConvE</option>
+                <option selected>ComplEx</option>
+                <option>ConvE</option>
                 <option>TransE</option>
               </select>
             </div>
@@ -154,7 +150,7 @@
             </div>
           </div>
           <!-- TABLE -->
-          <div class="flex flex-col max-h-96">
+          <div class="flex flex-col max-h-72">
             <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
               <div
                 class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8"
@@ -173,7 +169,7 @@
                         />
                         <th
                           scope="col"
-                          class="min-w-[12rem] py-4 pr-3 text-left text-sm text-gray-900"
+                          class="min-w-[12rem] py-4 pr-3 text-left text-sm font-semibold text-gray-900"
                           >Head Entity</th
                         >
                         <th
@@ -200,12 +196,13 @@
                               value={p}
                               name="link-explanation"
                               type="radio"
-                              class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-violet-600 focus:ring-violet-500 sm:left-6"
+                              class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 focus:ring-violet-500 sm:left-6"
+                              style="accent-color: #7c3aed;"
                             />
                           </td>
                           <!-- Selected: "text-violet-600", Not Selected: "text-gray-900" -->
                           <td
-                            class="max-w-xs truncate whitespace-nowrap py-4 pr-3 text-sm font-medium text-gray-900"
+                            class="max-w-xs truncate whitespace-nowrap py-4 pr-3 text-sm text-gray-900"
                             >{R.path(['prediction', 'head', 'entity'], p)}</td
                           >
                           <td
@@ -265,203 +262,205 @@
     
     <!-- KELPIE EXPLANATION -->
 
-    <div class="mx-auto max-w-5xl px-4 pb-40 sm:px-6 lg:px-8">
-      <h1 class="text-3xl font-bold leading-tight text-gray-900">
-        Kelpie Explanation
-      </h1>
-      <!-- EXPLAINED LINK -->
-      <h1 class="mt-8 text-xl leading-tight text-gray-600">
-        Prediction to explain
-      </h1>
-      <div class="mt-4 flex flex-row justify-center items-center gap-4">
-        <div class="max-w-5xl w-full grow">
+    {#if currentPrediction != -1}
+      <div class="mx-auto max-w-5xl px-4 pb-40 sm:px-6 lg:px-8">
+        <h1 class="text-3xl font-bold leading-tight text-gray-900">
+          Kelpie Explanation
+        </h1>
+        <!-- EXPLAINED LINK -->
+        <h1 class="mt-8 text-xl leading-tight text-gray-600">
+          Prediction to explain
+        </h1>
+        <div class="mt-4 flex flex-row justify-center items-center gap-4">
+          <div class="max-w-5xl w-full grow">
+            <div
+              class="flex flex-col justify-center h-32 grow rounded-lg border-2 border-violet-400 bg-white px-4 py-5 sm:px-6"
+            >
+              <h3 class="text-m font-medium leading-6 text-gray-900">
+                {currentPrediction.prediction.head.entity}
+              </h3>
+              <p class="mt-1 text-sm text-gray-400">
+                {currentPrediction.prediction.head.description}
+              </p>
+            </div>
+          </div>
+          <div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="#818CF8"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M17 8l4 4m0 0l-4 4m4-4H3"
+              />
+            </svg>
+          </div>
           <div
-            class="flex flex-col justify-center h-32 grow rounded-lg border-2 border-violet-400 bg-white px-4 py-5 sm:px-6"
+            class="w-full flex h-32 flex-row grow items-center rounded-lg border-2 border-violet-400 bg-white px-4 sm:px-6"
+          >
+            <div class="w-full text-m">
+              {currentPrediction.prediction.relation}
+            </div>
+          </div>
+          <div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="#818CF8"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M17 8l4 4m0 0l-4 4m4-4H3"
+              />
+            </svg>
+          </div>
+          <div
+            class="flex flex-col justify-center grow w-full h-32 rounded-lg border-2 border-violet-400 bg-white px-4 py-5 sm:px-6"
           >
             <h3 class="text-m font-medium leading-6 text-gray-900">
-              {currentPrediction.prediction.head.entity}
+              {currentPrediction.prediction.tail.entity}
             </h3>
             <p class="mt-1 text-sm text-gray-400">
-              {currentPrediction.prediction.head.description}
+              {currentPrediction.prediction.tail.description}
             </p>
           </div>
         </div>
-        <div>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="#818CF8"
-            stroke-width="2"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M17 8l4 4m0 0l-4 4m4-4H3"
-            />
-          </svg>
-        </div>
-        <div
-          class="w-full flex h-32 flex-row grow items-center rounded-lg border-2 border-violet-400 bg-white px-4 sm:px-6"
-        >
-          <div class="w-full text-m">
-            {currentPrediction.prediction.relation}
-          </div>
-        </div>
-        <div>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="#818CF8"
-            stroke-width="2"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M17 8l4 4m0 0l-4 4m4-4H3"
-            />
-          </svg>
-        </div>
-        <div
-          class="flex flex-col justify-center grow w-full h-32 rounded-lg border-2 border-violet-400 bg-white px-4 py-5 sm:px-6"
-        >
-          <h3 class="text-m font-medium leading-6 text-gray-900">
-            {currentPrediction.prediction.tail.entity}
-          </h3>
-          <p class="mt-1 text-sm text-gray-400">
-            {currentPrediction.prediction.tail.description}
-          </p>
-        </div>
-      </div>
 
-      <h1 class="mt-8 text-xl leading-tight text-gray-600">
-        Extracted Explanation
-      </h1>
+        <h1 class="mt-8 text-xl leading-tight text-gray-600">
+          Extracted Explanation
+        </h1>
 
-      <div class="mt-4 flex flex-row gap-16">
-        <!-- TABLE -->
-        <div class="flex grow w-2/3 flex-col">
-          <div class="-mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div
-              class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8"
-            >
+        <div class="mt-4 flex flex-row gap-16">
+          <!-- TABLE -->
+          <div class="flex grow w-2/3 flex-col">
+            <div class="-mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
               <div
-                class="shadow overflow-hidden ring-1 ring-black ring-opacity-5 md:rounded-lg"
+                class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8"
               >
-                <table class="min-w-full divide-y divide-gray-300">
-                  <thead class="bg-gray-100">
-                    <tr>
-                      <th
-                        scope="col"
-                        class="py-4 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-                        >Head Entity</th
-                      >
-                      <th
-                        scope="col"
-                        class="px-3 py-4 text-left text-sm font-semibold text-gray-900"
-                        >Relation</th
-                      >
-                      <th
-                        scope="col"
-                        class="px-3 py-4 text-left text-sm font-semibold text-gray-900"
-                        >Tail Entity</th
-                      >
-                    </tr>
-                  </thead>
-                  <tbody class="divide-y divide-gray-200 bg-white">
-                    {#each currentPrediction.explanation.facts || [] as fact}
+                <div
+                  class="shadow overflow-hidden ring-1 ring-black ring-opacity-5 md:rounded-lg"
+                >
+                  <table class="min-w-full divide-y divide-gray-300">
+                    <thead class="bg-gray-100">
                       <tr>
-                        <td
-                          class="max-w-xs truncate py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
-                          >{fact.head.entity}</td
+                        <th
+                          scope="col"
+                          class="py-4 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                          >Head Entity</th
                         >
-                        <td
-                          class="max-w-xs truncate px-3 py-4 text-sm text-gray-500"
-                          >{fact.relation}</td
+                        <th
+                          scope="col"
+                          class="px-3 py-4 text-left text-sm font-semibold text-gray-900"
+                          >Relation</th
                         >
-                        <td
-                          class="max-w-xs truncate px-3 py-4 text-sm text-gray-500"
-                          >{fact.tail.entity}</td
+                        <th
+                          scope="col"
+                          class="px-3 py-4 text-left text-sm font-semibold text-gray-900"
+                          >Tail Entity</th
                         >
                       </tr>
-                    {/each}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 bg-white">
+                      {#each currentPrediction.explanation.facts || [] as fact}
+                        <tr>
+                          <td
+                            class="max-w-xs truncate py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
+                            >{fact.head.entity}</td
+                          >
+                          <td
+                            class="max-w-xs truncate px-3 py-4 text-sm text-gray-500"
+                            >{fact.relation}</td
+                          >
+                          <td
+                            class="max-w-xs truncate px-3 py-4 text-sm text-gray-500"
+                            >{fact.tail.entity}</td
+                          >
+                        </tr>
+                      {/each}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {#if scenario=="necessary"}
+        {#if scenario=="necessary"}
 
-        <h1 class="mt-8 text-xl leading-tight text-gray-600">
-          Statistics
-        </h1>
+          <h1 class="mt-8 text-xl leading-tight text-gray-600">
+            Statistics
+          </h1>
 
-        <div class="mt-4 flex flex-row grow-0 gap-8">
-          <div class="flex flex-col gap-2">
-            <p class="text-m" style="margin-left: 2rem;">Original Tail Rank: 
-              <span class="font-bold">{currentPrediction.explanation.old_rank}</span>
-            </p>
-            <p class="text-m" style="margin-left: 2rem;">Tail Rank after removal: 
-              <span class="font-bold text-purple-600">{currentPrediction.explanation.new_rank}</span>
-            </p>
-            <p class="text-m" style="margin-left: 2rem;">Original Score: 
-              <span class="font-bold">{currentPrediction.explanation.old_score}</span>
-            </p>
-            {#if currentPrediction.explanation.old_score > currentPrediction.explanation.new_score}
-            <p class="text-m" style="margin-left: 2rem;">Score after removal: 
-              <span class="font-bold">{currentPrediction.explanation.new_score}</span> 
-                <span class="font-bold text-red-600">({(currentPrediction.explanation.new_score-currentPrediction.explanation.old_score).toFixed(3)})</span>
+          <div class="mt-4 flex flex-row grow-0 gap-8">
+            <div class="flex flex-col gap-2">
+              <p class="text-m" style="margin-left: 2rem;">Original Tail Rank: 
+                <span class="font-bold">{currentPrediction.explanation.old_rank}</span>
               </p>
-            {:else}
+              <p class="text-m" style="margin-left: 2rem;">Tail Rank after removal: 
+                <span class="font-bold text-purple-600">{currentPrediction.explanation.new_rank}</span>
+              </p>
+              <p class="text-m" style="margin-left: 2rem;">Original Score: 
+                <span class="font-bold">{currentPrediction.explanation.old_score}</span>
+              </p>
+              {#if currentPrediction.explanation.old_score > currentPrediction.explanation.new_score}
               <p class="text-m" style="margin-left: 2rem;">Score after removal: 
-                <span class="font-bold">{currentPrediction.explanation.new_score}</span>
-                <span class="font-bold text-red-600"> +({(currentPrediction.explanation.new_score-currentPrediction.explanation.old_score).toFixed(3)})</span>
-              </p>
-            {/if}
-          </div>
-        </div>
-      {/if}
-
-      {#if scenario=="sufficient"}
-        <h1 class="mt-8 text-xl leading-tight text-gray-600">
-          Converted Entities
-        </h1>
-
-        <div class="mt-8 grid grid-cols-1 gap-8">
-    
-          {#each currentPrediction.explanation.converted || [] as converted_entity}
-            <div class="max-w-m grid grid-cols-2">
-              <div class="max-w-sm">
-                <div class="flex flex-col justify-center h-max-20 grow rounded-lg border-2 border-gray-400 bg-white px-4 py-5 sm:px-6">
-                  <h3 class="text-sm font-medium leading-6 text-gray-900">
-                    {converted_entity.entity.entity}
-                  </h3>
-                  <p class="mt-1 text-sm text-gray-400">
-                    {converted_entity.entity.description}
-                  </p>
-                </div>
-              </div>
-  
-              <div class="mt-4 flex flex-row grow-0 gap-8" style="margin: 0; align-items: center;">
-                <div class="flex flex-col gap-2">
-                  <p class="text-m">Original Tail Rank: 
-                    <span class="font-bold">{converted_entity.original_rank}</span>
-                  </p>
-                  <p class="text-m">Conversion Tail Rank:
-                    <span class="font-bold text-purple-600">{converted_entity.new_rank}</span>
-                  </p>
-                </div>
-              </div>
+                <span class="font-bold">{currentPrediction.explanation.new_score}</span> 
+                  <span class="font-bold text-red-600">({(currentPrediction.explanation.new_score-currentPrediction.explanation.old_score).toFixed(3)})</span>
+                </p>
+              {:else}
+                <p class="text-m" style="margin-left: 2rem;">Score after removal: 
+                  <span class="font-bold">{currentPrediction.explanation.new_score}</span>
+                  <span class="font-bold text-red-600"> +({(currentPrediction.explanation.new_score-currentPrediction.explanation.old_score).toFixed(3)})</span>
+                </p>
+              {/if}
             </div>
-          {/each}
-        </div>
-      {/if}
-    </div>
+          </div>
+        {/if}
+
+        {#if scenario=="sufficient"}
+          <h1 class="mt-8 text-xl leading-tight text-gray-600">
+            Converted Entities
+          </h1>
+
+          <div class="mt-8 grid grid-cols-1 gap-8">
+      
+            {#each currentPrediction.explanation.converted || [] as converted_entity}
+              <div class="max-w-m grid grid-cols-2">
+                <div class="max-w-sm">
+                  <div class="flex flex-col justify-center h-max-20 grow rounded-lg border-2 border-gray-400 bg-white px-4 py-5 sm:px-6">
+                    <h3 class="text-sm font-medium leading-6 text-gray-900">
+                      {converted_entity.entity.entity}
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-400">
+                      {converted_entity.entity.description}
+                    </p>
+                  </div>
+                </div>
+    
+                <div class="mt-4 flex flex-row grow-0 gap-8" style="margin: 0; align-items: center;">
+                  <div class="flex flex-col gap-2">
+                    <p class="text-m">Original Tail Rank: 
+                      <span class="font-bold">{converted_entity.original_rank}</span>
+                    </p>
+                    <p class="text-m">Conversion Tail Rank:
+                      <span class="font-bold text-purple-600">{converted_entity.new_rank}</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            {/each}
+          </div>
+        {/if}
+      </div>
+    {/if}
   </div>
 </div>
